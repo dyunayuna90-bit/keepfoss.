@@ -20,17 +20,17 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # LANGKAH PINTAR: Generate Wrapper dulu
-    - name: Generate Gradle Wrapper
-      run: gradle wrapper --gradle-version 8.2
+    # INI KUNCINYA: Kita install Gradle 8.5 secara manual ke dalam sistem runner
+    # Biar dia gak pake Gradle 9.2.1 bawaan yang bikin rusuh
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: 8.5
 
-    # Sekarang file gradlew udah ada, kasih izin akses
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    # Build pake wrapper yang baru aja digenerate (Pasti Sesuai!)
+    # Langsung Build. Gak usah generate wrapper, gak usah chmod.
+    # Command 'gradle' sekarang udah pasti versi 8.5 karena step di atas.
     - name: Build with Gradle
-      run: ./gradlew assembleDebug --stacktrace
+      run: gradle assembleDebug --stacktrace --warning-mode all
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
